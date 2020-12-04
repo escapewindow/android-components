@@ -15,7 +15,7 @@ treeherder:
         lib-fetch-httpurlconnect: lib-fetch-httpurlconnection
         feature-webcompat-report: feature-webcompat-reporter
 
-task-priority: highest
+task-priority: low
 
 taskgraph:
     register: ac_taskgraph:register
