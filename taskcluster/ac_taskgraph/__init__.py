@@ -16,6 +16,7 @@ from .build_config import get_components, get_version
 extend_parameters_schema({
     Required("pull_request_number"): Any(All(int, Range(min=1)), None),
     Required("base_rev"): Any(basestring, None),
+    Required("next_version"): basestring,
     Required("version"): basestring,
 })
 
