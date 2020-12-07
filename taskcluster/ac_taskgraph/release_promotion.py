@@ -152,8 +152,6 @@ def release_promotion_action(parameters, graph_config, input, task_group_id, tas
     parameters['next_version'] = input['next_version']
 
     version = MavenVersion.parse(version_string)
-    if version.is_beta:
-        release_type = "beta"
     elif version.is_release:
         release_type = "release"
     else:
