@@ -119,7 +119,7 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler {
         contextMenuIntegration.set(
             feature = ContextMenuIntegration(
                 context = requireContext(),
-                fragmentManager = requireFragmentManager(),
+                fragmentManager = parentFragmentManager,
                 browserStore = components.store,
                 tabsUseCases = components.tabsUseCases,
                 contextMenuUseCases = components.contextMenuUseCases,
@@ -134,7 +134,7 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler {
                 fragment = this,
                 store = components.store,
                 customTabId = sessionId,
-                fragmentManager = requireFragmentManager(),
+                fragmentManager = parentFragmentManager,
                 onNeedToRequestPermissions = { permissions ->
                     requestPermissions(permissions, REQUEST_CODE_PROMPT_PERMISSIONS)
                 }),
@@ -146,7 +146,7 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler {
                 context = requireContext(),
                 sessionId = sessionId,
                 storage = components.permissionStorage,
-                fragmentManager = requireFragmentManager(),
+                fragmentManager = parentFragmentManager,
                 sitePermissionsRules = SitePermissionsRules(
                     autoplayAudible = SitePermissionsRules.AutoplayAction.ALLOWED,
                     autoplayInaudible = SitePermissionsRules.AutoplayAction.ALLOWED,
@@ -154,7 +154,8 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler {
                     location = SitePermissionsRules.Action.ASK_TO_ALLOW,
                     notification = SitePermissionsRules.Action.ASK_TO_ALLOW,
                     microphone = SitePermissionsRules.Action.ASK_TO_ALLOW,
-                    persistentStorage = SitePermissionsRules.Action.ASK_TO_ALLOW
+                    persistentStorage = SitePermissionsRules.Action.ASK_TO_ALLOW,
+                    mediaKeySystemAccess = SitePermissionsRules.Action.ASK_TO_ALLOW
                 ),
                 onNeedToRequestPermissions = { permissions ->
                     requestPermissions(permissions, REQUEST_CODE_APP_PERMISSIONS)

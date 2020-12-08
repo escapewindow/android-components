@@ -51,7 +51,7 @@ import mozilla.components.feature.downloads.DownloadMiddleware
 import mozilla.components.feature.downloads.DownloadsUseCases
 import mozilla.components.feature.intent.processing.TabIntentProcessor
 import mozilla.components.feature.media.MediaSessionFeature
-import mozilla.components.feature.media.RecordingDevicesNotificationFeature
+import mozilla.components.feature.media.middleware.RecordingDevicesMiddleware
 import mozilla.components.feature.pwa.ManifestStorage
 import mozilla.components.feature.pwa.WebAppInterceptor
 import mozilla.components.feature.pwa.WebAppShortcutManager
@@ -82,7 +82,7 @@ import org.mozilla.samples.browser.ext.components
 import org.mozilla.samples.browser.integration.FindInPageIntegration
 import org.mozilla.samples.browser.integration.P2PIntegration
 import org.mozilla.samples.browser.media.MediaSessionService
-import org.mozilla.samples.browser.request.SampleRequestInterceptor
+import org.mozilla.samples.browser.request.SampleUrlEncodedRequestInterceptor
 import java.util.concurrent.TimeUnit
 
 private const val DAY_IN_MINUTES = 24 * 60L
@@ -101,7 +101,7 @@ open class DefaultComponents(private val applicationContext: Context) {
     val engineSettings by lazy {
         DefaultSettings().apply {
             historyTrackingDelegate = HistoryDelegate(lazyHistoryStorage)
-            requestInterceptor = SampleRequestInterceptor(applicationContext)
+            requestInterceptor = SampleUrlEncodedRequestInterceptor(applicationContext)
             remoteDebuggingEnabled = true
             supportMultipleWindows = true
             preferredColorScheme = PreferredColorScheme.Dark
@@ -140,7 +140,8 @@ open class DefaultComponents(private val applicationContext: Context) {
                 applicationContext,
                 LocationService.default()
             ),
-            SearchMiddleware(applicationContext)
+            SearchMiddleware(applicationContext),
+            RecordingDevicesMiddleware(applicationContext)
         ) + EngineMiddleware.create(engine, ::findSessionById))
     }
 
@@ -171,9 +172,6 @@ open class DefaultComponents(private val applicationContext: Context) {
 
             icons.install(engine, store)
 
-            RecordingDevicesNotificationFeature(applicationContext, sessionManager = this)
-                .enable()
-
             WebNotificationFeature(applicationContext, engine, icons, R.drawable.ic_notification,
                 permissionStorage, BrowserActivity::class.java)
 
@@ -202,7 +200,7 @@ open class DefaultComponents(private val applicationContext: Context) {
     }
 
     val searchUseCases by lazy {
-        SearchUseCases(store, store.toDefaultSearchEngineProvider(), sessionManager)
+        SearchUseCases(store, store.toDefaultSearchEngineProvider(), tabsUseCases)
     }
 
     val defaultSearchUseCase by lazy {
@@ -210,7 +208,7 @@ open class DefaultComponents(private val applicationContext: Context) {
             searchUseCases.defaultSearch.invoke(
                 searchTerms = searchTerms,
                 searchEngine = null,
-                parentSession = null
+                parentSessionId = null
             )
         }
     }
@@ -236,7 +234,7 @@ open class DefaultComponents(private val applicationContext: Context) {
 
     val webAppManifestStorage by lazy { ManifestStorage(applicationContext) }
     val webAppShortcutManager by lazy { WebAppShortcutManager(applicationContext, client, webAppManifestStorage) }
-    val webAppUseCases by lazy { WebAppUseCases(applicationContext, sessionManager, webAppShortcutManager) }
+    val webAppUseCases by lazy { WebAppUseCases(applicationContext, store, webAppShortcutManager) }
 
     // P2P communication
     val nearbyConnection by lazy {
