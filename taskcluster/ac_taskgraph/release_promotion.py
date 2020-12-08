@@ -17,6 +17,7 @@ from taskgraph.util.taskgraph import find_decision_task, find_existing_tasks_fro
 
 RELEASE_PROMOTION_PROJECTS = (
     "https://github.com/mozilla-mobile/android-components",
+    "https://github.com/escapewindow/android-components",
 )
 
 
