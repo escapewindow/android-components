@@ -133,7 +133,7 @@ treeherder:
         samples-browser-system: samples-browser-system
 
 
-task-priority: highest
+task-priority: low
 
 taskgraph:
     register: ac_taskgraph:register
