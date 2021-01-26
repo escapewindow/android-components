@@ -189,6 +189,20 @@ tasks:
                                                 - index.mobile.v2.${project}.branch.${head_branch}.latest.taskgraph.decision-${cron.job_name}
                                                 - index.mobile.v2.${project}.branch.${head_branch}.revision.${head_sha}.taskgraph.decision-${cron.job_name}
                                                 - index.mobile.v2.${project}.branch.${head_branch}.revision.${head_sha}.taskgraph.cron.${ownTaskId}
+                                    # XXX Ideally we find a more elegant solution here.
+                                    - $if: 'repoUrl == "https://github.com/mozilla-releng/staging-android-components"'
+                                      then:
+                                          - $if: 'tasks_for == "github-push"'
+                                            then:
+                                                - index.mobile.v2.${project}.branch.${short_head_branch}.latest.taskgraph.decision
+                                                - index.mobile.v2.${project}.branch.${short_head_branch}.revision.${head_sha}.taskgraph.decision
+                                                - index.mobile.v2.${project}.revision.${head_sha}.taskgraph.decision
+                                          - $if: 'tasks_for == "cron"'
+                                            then:
+                                                # cron context provides ${head_branch} as a short one
+                                                - index.mobile.v2.${project}.branch.${head_branch}.latest.taskgraph.decision-${cron.job_name}
+                                                - index.mobile.v2.${project}.branch.${head_branch}.revision.${head_sha}.taskgraph.decision-${cron.job_name}
+                                                - index.mobile.v2.${project}.branch.${head_branch}.revision.${head_sha}.taskgraph.cron.${ownTaskId}
                             scopes:
                                 # `https://` is 8 characters so, ${repoUrl[8:]} is the repository without the protocol.
                                 $if: 'tasks_for == "github-push"'
